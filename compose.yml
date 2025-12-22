@@ -1,0 +1,42 @@
+services:
+  rparliament:
+    build:
+      context: .
+    depends_on:
+      - fluentbit
+    restart: unless-stopped
+    ports:
+      - "4242:4242"
+      - "8282:8282"
+    volumes:
+      - ./keys/root.crt:/etc/ssl/certs/root.crt:ro
+      - ./keys/peering.crt:/etc/ssl/certs/peering.crt:ro
+      - ./keys/peering.key:/etc/ssl/private/peering.key:ro
+      - ./keys/rtr.crt:/etc/ssl/certs/rtr.crt:ro
+      - ./keys/rtr.key:/etc/ssl/private/rtr.key:ro
+      - ./config/peers.lst:/data/out/share/peers.lst
+    environment:
+      SELF_IP: PLACEHOLDER
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: "127.0.0.1:24224"
+        tag: "rparliament.PLACEHOLDER"
+        fluentd-async: "true"
+
+  fluentbit:
+    image: fluent/fluent-bit:4.2.1
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:24224:24224"
+      - "127.0.0.1:24224:24224/udp"
+    volumes:
+      - fluentbit_buffer:/fluent-bit/storage
+      - ./config/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf:ro
+
+      - ./keys/peering.crt:/etc/ssl/certs/peering.crt:ro
+      - ./keys/peering.key:/etc/ssl/private/peering.key:ro
+      - ./keys/root.crt:/etc/ssl/certs/root.crt:ro
+
+volumes:
+  fluentbit_buffer:
