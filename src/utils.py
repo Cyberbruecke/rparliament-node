@@ -60,7 +60,15 @@ def read_json(filename: PathLike) -> dict:
 
 def write_json(data: Union[dict, list], filename: PathLike):
     with open(filename, "w") as f:
-        json.dump(data, f, indent=2)
+        json.dump(recursive_sort(data), f, indent=2)
+
+
+def recursive_sort(d: Union[dict, list]) -> Union[dict, list]:
+    if isinstance(d, dict):
+        return {k: recursive_sort(d[k]) for k in sorted(d.keys())}
+    if isinstance(d, list):
+        return sorted([recursive_sort(v) for v in d], key=lambda x: json.dumps(x, sort_keys=True))
+    return d
 
 
 def log(src: str, text: str):
