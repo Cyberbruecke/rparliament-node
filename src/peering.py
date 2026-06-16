@@ -10,14 +10,14 @@ from requests.exceptions import Timeout, ConnectionError, HTTPError, JSONDecodeE
 
 from utils import write_lines, write_json, read_lines, log, get_localhosts, RPKI_OBJTYPES, write_metrics
 from vars import PEER_DISCOVERY, CONSENSUS, F_ROOT_CRT, F_SERVER_KEY, F_SERVER_CRT, F_PEER_CANDIDATES, \
-    PEER_TIMEOUT, PEER_POLL_INTERVAL, PEER_RETRIES, INIT_PEERING_DELAY, D_SHARE, D_METRICS, SELF_IP
+    PEER_TIMEOUT, PEER_POLL_INTERVAL, PEER_RETRIES, INIT_PEERING_DELAY, D_SHARE, D_METRICS, NODENAME
 
 cons_threshold = 1
 peers = set()
 last_modified = {}
 current_vrps = {}
 current_skiplists = {}
-localhosts = get_localhosts() | {SELF_IP}
+localhosts = get_localhosts() | {NODENAME}
 
 metrics = {metric: 0 for metric in RPKI_OBJTYPES +
                                    [f"union_{objtype}" for objtype in RPKI_OBJTYPES] +
@@ -111,7 +111,7 @@ def aggregate_master_vrp(peer_vrps: dict) -> dict:
     master_vrp = {"metadata": {"buildtime": datetime.now().astimezone().isoformat()}}
     master_vrp.update({objtype: [json.loads(entry_str) for entry_str, votes in entries.items() if votes >= cons_threshold] for objtype, entries in vote.items()})
 
-    metrics.update({objtype: len(peer_vrps.get(SELF_IP, {}).get(objtype, [])) for objtype in RPKI_OBJTYPES})
+    metrics.update({objtype: len(peer_vrps.get(NODENAME, {}).get(objtype, [])) for objtype in RPKI_OBJTYPES})
     metrics.update({f"union_{obtype}": len(entries) for obtype, entries in vote.items()})
     metrics.update({f"consensus_{objtype}": sum(votes >= cons_threshold for votes in entries.values()) for objtype, entries in vote.items()})
     metrics.update({f"intersection_{objtype}": sum(votes >= len(peers) for votes in entries.values()) for objtype, entries in vote.items()})
@@ -132,7 +132,7 @@ def aggregate_master_skiplist(peer_skiplists: dict) -> Set[str]:
             vote[domain] = vote.get(domain, 0) + 1
     master_list = {domain for domain, votes in vote.items() if votes >= cons_threshold}
 
-    metrics["skiplisted"] = len(set(peer_skiplists.get(SELF_IP, [])))
+    metrics["skiplisted"] = len(set(peer_skiplists.get(NODENAME, [])))
     metrics["union_skiplisted"] = len(vote)
     metrics["consensus_skiplisted"] = len(master_list)
     metrics["intersection_skiplisted"] = len({domain for domain, votes in vote.items() if votes >= len(peers)})
@@ -172,7 +172,7 @@ def is_conn_refused(e: Exception) -> bool:
 
 
 if __name__ == '__main__':
-    peers = set(read_lines(D_SHARE / "peers.lst")).union({SELF_IP})
+    peers = set(read_lines(D_SHARE / "peers.lst")).union({NODENAME})
     metrics['peers'] = len(peers)
     cons_threshold = ceil(CONSENSUS * len(peers))
     metrics["consensus_threshold"] = cons_threshold

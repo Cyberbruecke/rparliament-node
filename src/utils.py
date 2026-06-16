@@ -6,7 +6,7 @@ from typing import Union, Iterable, Set
 
 from json import JSONDecodeError
 
-from vars import SELF_IP
+from vars import NODENAME
 
 PathLike = Union[str, Path]
 RPKI_OBJTYPES = ["roas", "aspas", "bgpsec_keys"]
@@ -32,7 +32,7 @@ def write_metrics(metrics: dict, filename: PathLike):
                     f"# TYPE {metric_name} gauge\n")
             if isinstance(value, dict):
                 for label, count in value.items():
-                    f.write(f'{metric_name}{{src="{SELF_IP}", dst="{label}"}} {count}\n')
+                    f.write(f'{metric_name}{{src="{NODENAME}", dst="{label}"}} {count}\n')
                 f.write("\n")
             else:
                 f.write(f"{metric_name} {value}\n\n")

@@ -5,9 +5,10 @@ from scapy.layers.inet import IP, TCP, UDP
 from scapy.layers.inet6 import IPv6
 from scapy.sendrecv import sniff
 
-from utils import write_json
-from vars import F_BL_DNSBOOK, F_BL_CONN_STATE, SNIFF_IFACE, SELF_IP
+from utils import write_json, get_localhosts
+from vars import F_BL_DNSBOOK, F_BL_CONN_STATE, SNIFF_IFACE
 
+local_ips = get_localhosts()
 dnsbook = {}
 conn_listing = {}
 
@@ -30,7 +31,7 @@ def conns_processing(pkt):
     IPvX = IP if IP in pkt else (IPv6 if IPv6 in pkt else None)
     if IPvX:
 
-        if (pkt[IPvX].dst == SELF_IP and pkt[TCP].dport in (443, 80, 8282)) or (pkt[IPvX].src == SELF_IP and pkt[TCP].sport in (443, 80, 8282)):
+        if (pkt[IPvX].dst in local_ips and pkt[TCP].dport in (443, 80, 8282)) or (pkt[IPvX].src in local_ips and pkt[TCP].sport in (443, 80, 8282)):
             # ignore peer and RTR communication
             return
 

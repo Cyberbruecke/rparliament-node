@@ -10,13 +10,11 @@ services:
       - "8282:8282"
     volumes:
       - ./keys/root.crt:/etc/ssl/certs/root.crt:ro
-      - ./keys/peering.crt:/etc/ssl/certs/peering.crt:ro
-      - ./keys/peering.key:/etc/ssl/private/peering.key:ro
-      - ./keys/rtr.crt:/etc/ssl/certs/rtr.crt:ro
-      - ./keys/rtr.key:/etc/ssl/private/rtr.key:ro
+      - ./keys/node.crt:/etc/ssl/certs/node.crt:ro
+      - ./keys/node.key:/etc/ssl/private/node.key:ro
       - ./config/peers.lst:/data/out/share/peers.lst
     environment:
-      SELF_IP: PLACEHOLDER
+      NODENAME: ${NODENAME}
     logging:
       driver: fluentd
       options:
@@ -33,11 +31,11 @@ services:
       - fluentbit_buffer:/fluent-bit/storage
       - ./config/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf:ro
 
-      - ./keys/peering.crt:/etc/ssl/certs/peering.crt:ro
-      - ./keys/peering.key:/etc/ssl/private/peering.key:ro
+      - ./keys/node.crt:/etc/ssl/certs/node.crt:ro
+      - ./keys/node.key:/etc/ssl/private/node.key:ro
       - ./keys/root.crt:/etc/ssl/certs/root.crt:ro
     environment:
-      - "TAG=rparliament.PLACEHOLDER"
+      - "TAG=rparliament.${NODENAME}"
 
 volumes:
   fluentbit_buffer:

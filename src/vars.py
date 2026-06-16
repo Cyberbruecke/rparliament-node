@@ -14,8 +14,8 @@ try:
     F_PEER_CANDIDATES = Path("/tmp/peer_candidates")
     F_BL_DNSBOOK = Path("/tmp/dnsbook.json")
     F_BL_CONN_STATE = Path("/tmp/conn_state.json")
-    F_SERVER_CRT = Path("/etc/ssl/certs/peering.crt")
-    F_SERVER_KEY = Path("/etc/ssl/private/peering.key")
+    F_SERVER_CRT = Path("/etc/ssl/certs/node.crt")
+    F_SERVER_KEY = Path("/etc/ssl/private/node.key")
     F_ROOT_CRT = Path("/etc/ssl/certs/root.crt")
 
     # config
@@ -33,7 +33,7 @@ try:
     SNIFF_IFACE = os.environ.get("SNIFF_IFACE", "eth0")
     PEER_RETRIES = int(os.environ.get("PEER_RETRIES", 3))
     STALLING_THRESHOLD = float(os.environ.get("STALLING_THRESHOLD", 0.9))
-    SELF_IP = os.environ["SELF_IP"]
+    NODENAME = os.environ["NODENAME"]
 
 except KeyError as e:
     print(f"missing environment variable: {e.args[0]}")

@@ -66,6 +66,6 @@ CMD ln -sf /proc/1/fd/1 /dev/stdout && \
     (python3 ip_reader.py &) && \
     nginx -t && \
     service nginx start && \
-    (stayrtr -bind '' -tls.bind 0.0.0.0:8282 -tls.key /etc/ssl/private/rtr.key -tls.cert /etc/ssl/certs/rtr.crt -cache http://localhost/master-vrp.json -refresh $RTR_REFRESH &) && \
+    (stayrtr -bind '' -tls.bind 0.0.0.0:8282 -tls.key /etc/ssl/private/node.key -tls.cert /etc/ssl/certs/node.crt -cache http://localhost/master-vrp.json -refresh $RTR_REFRESH &) && \
     (python3 -u monitored_rp.py &) && \
     python3 -u peering.py
