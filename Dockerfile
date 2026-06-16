@@ -47,7 +47,7 @@ COPY /config/stayrtr-proxy.conf /etc/nginx/sites-enabled/stayrtr-proxy.conf
 COPY /config/peering.conf /etc/nginx/sites-enabled/peering.conf
 RUN ln -sf /dev/stdout /var/log/nginx/access.log && ln -sf /dev/stderr /var/log/nginx/error.log
 RUN sed -i 's/user www-data;/user root;/' /etc/nginx/nginx.conf
-RUN sed -i 's/http {/http {\n\tlog_format peer_ip_log '\$remote_addr';\n\taccess_log \/tmp\/peer_ip_log peer_ip_log;/' /etc/nginx/nginx.conf
+RUN sed -i 's/http {/http {\n\tlog_format peer_ip_log '\$http_x_node_name';\n\taccess_log \/tmp\/peer_ip_log peer_ip_log;/' /etc/nginx/nginx.conf
 RUN mkfifo $F_PEER_IP_LOG
 
 

@@ -9,14 +9,14 @@ seen = set()
 while True:
     with open(F_PEER_IP_LOG) as f_in:
         for line in f_in:
-            ip = line.strip()
+            name = line.strip()
 
-            if re.match("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}", ip):
+            if re.match(r"[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", name):
                 if not F_PEER_CANDIDATES.exists():
                     seen = set()
 
-                if ip not in seen:
+                if name not in seen:
                     with open(F_PEER_CANDIDATES, "a") as f_out:
-                        f_out.write(ip + "\n")
-                    seen.add(ip)
+                        f_out.write(name + "\n")
+                    seen.add(name)
     sleep(WAIT)

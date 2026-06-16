@@ -64,7 +64,7 @@ def fetch_from_peers(peer_addrs: Iterable[str], resource: str, is_json: bool = F
 
         for retry in range(PEER_RETRIES):
             try:
-                headers = {"User-Agent": "RParliament Node"}
+                headers = {"User-Agent": "RParliament Node", "X-Node-Name": NODENAME}
                 try:
                     headers["If-Modified-Since"] = last_modified[peer_addr][resource]
                 except KeyError:
