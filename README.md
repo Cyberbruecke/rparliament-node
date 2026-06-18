@@ -29,7 +29,7 @@ git clone https://github.com/Cyberbruecke/rparliament-node.git
 cd rparliament-node
 mv /path/to/node.rparliament.org.tar.gz.gpg .
 gpg -d node.rparliament.org.tar.gz.gpg | tar -xzf -
-dig +short PTR node.rparliament.org > config/peers.lst
+dig +short TXT node.rparliament.org | tr -d '"' > config/peers.lst
 echo "NODENAME=$(openssl x509 -noout -subject -in keys/node.crt | sed 's/.*CN *= *//')" > .env
 ```
 
